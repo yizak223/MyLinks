@@ -1,6 +1,7 @@
 const { Router } = require('express')
 const router = Router()
 const { User } = require('../models/users.model')
+const { register, logIn, deleteUser, editUser } = require('../controllers/user.controllers')
 
 let users = []
 router.get('/', async (req, res) => {
@@ -13,49 +14,11 @@ router.get('/', async (req, res) => {
     }
 })
 
-router.post('/register', async (req, res) => {
-    const body = req.body;
-    try {
-        const newUser = new User(body);
-        await newUser.save();
-        res.send({ msg: 'Welcome User', newUser });
-    } catch (err) {
-        console.log(err);
-        res.status(400).send(err);
-    }
-})
+router.post('/register', register)
 
-router.post('/login', async (req, res) => {
-    const body = req.body;
-    try {
-        const user = await User.findOne({ Email: body.Email, Password: body.Password });
-        res.send({ msg: 'Hello', user });
-    } catch (err) {
-        console.log(err);
-        res.status(400).send(err);
-    }
-})
+router.post('/login', logIn)
 
-router.delete('/:id', async (req, res) => {
-    const id = req.params.id;
-    try{
-        await User.findByIdAndDelete(id)
-        res.send({msg: 'User deleted'})
-    }catch (err) {
-        console.log(err);
-        res.status(400).send(err);
-    }
-})
+router.delete('/:id', deleteUser)
 
-router.patch('/:id', async (req, res) => {
-    const id = req.params.id;
-    const body = req.body;
-    try{
-        await User.findByIdAndUpdate(id, body)
-        res.send({msg: 'User updated'})
-    }catch(err){
-        console.log(err);
-        res.status(400).send(err);
-    }
-})
+router.patch('/:id', editUser)
 module.exports = router
